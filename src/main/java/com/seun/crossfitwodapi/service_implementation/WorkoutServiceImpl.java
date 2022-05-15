@@ -1,12 +1,12 @@
-package com.seun.crossfitWodAPI.serviceImpl;
+package com.seun.crossfitwodapi.service_implementation;
 
-import com.seun.crossfitWodAPI.domain.Workout;
-import com.seun.crossfitWodAPI.domain.dto.WorkoutDTO;
-import com.seun.crossfitWodAPI.exception.BadRequestException;
-import com.seun.crossfitWodAPI.exception.ResourceAlreadyExistsException;
-import com.seun.crossfitWodAPI.exception.ResourceNotFoundException;
-import com.seun.crossfitWodAPI.repository.WorkoutRepository;
-import com.seun.crossfitWodAPI.service.WorkoutService;
+import com.seun.crossfitwodapi.domain.Workout;
+import com.seun.crossfitwodapi.domain.dto.WorkoutDTO;
+import com.seun.crossfitwodapi.exception.BadRequestException;
+import com.seun.crossfitwodapi.exception.ResourceAlreadyExistsException;
+import com.seun.crossfitwodapi.exception.ResourceNotFoundException;
+import com.seun.crossfitwodapi.repository.WorkoutRepository;
+import com.seun.crossfitwodapi.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

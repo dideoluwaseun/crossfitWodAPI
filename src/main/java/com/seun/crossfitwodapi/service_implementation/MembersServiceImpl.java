@@ -1,16 +1,16 @@
-package com.seun.crossfitWodAPI.serviceImpl;
+package com.seun.crossfitwodapi.service_implementation;
 
-import com.seun.crossfitWodAPI.domain.Members;
-import com.seun.crossfitWodAPI.domain.MembersRoles;
-import com.seun.crossfitWodAPI.domain.Roles;
-import com.seun.crossfitWodAPI.domain.dto.MembersDTO;
-import com.seun.crossfitWodAPI.exception.BadRequestException;
-import com.seun.crossfitWodAPI.exception.ResourceAlreadyExistsException;
-import com.seun.crossfitWodAPI.exception.ResourceNotFoundException;
-import com.seun.crossfitWodAPI.repository.MembersRepository;
-import com.seun.crossfitWodAPI.repository.MembersRolesRepository;
-import com.seun.crossfitWodAPI.repository.RolesRepository;
-import com.seun.crossfitWodAPI.service.MembersService;
+import com.seun.crossfitwodapi.domain.Members;
+import com.seun.crossfitwodapi.domain.MembersRoles;
+import com.seun.crossfitwodapi.domain.Roles;
+import com.seun.crossfitwodapi.domain.dto.MembersDTO;
+import com.seun.crossfitwodapi.exception.BadRequestException;
+import com.seun.crossfitwodapi.exception.ResourceAlreadyExistsException;
+import com.seun.crossfitwodapi.exception.ResourceNotFoundException;
+import com.seun.crossfitwodapi.repository.MembersRepository;
+import com.seun.crossfitwodapi.repository.MembersRolesRepository;
+import com.seun.crossfitwodapi.repository.RolesRepository;
+import com.seun.crossfitwodapi.service.MembersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,9 +48,8 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        members.getMembersRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getRoles().getName()));
-        });
+        members.getMembersRoles().forEach(role ->
+            authorities.add(new SimpleGrantedAuthority(role.getRoles().getName())));
         return new User(members.getUsername(),members.getPassword(), authorities);
     }
 
@@ -116,16 +115,18 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public void addRoleToMembers(String username, String roleName) {
        Members members = membersRepository.findByUsername(username);
        Roles roles = rolesRepository.findByName(roleName);
-
-//        System.out.println("me");
-        MembersRoles membersRoles = new MembersRoles();
-        log.info("Adding role to Member");
-        membersRoles.setRoles(roles);
-        membersRoles.setMembers(members);
-        membersRolesRepository.save(membersRoles);
+       log.info("Adding role to Member");
+       MembersRoles membersRoles = MembersRoles.builder()
+               .roles(roles)
+               .members(members)
+               .build();
+       membersRolesRepository.save(membersRoles);
+//       Set<MembersRoles> membersRoles1 = members.getMembersRoles();
+//        membersRoles1.add(membersRoles);
         members.getMembersRoles().add(membersRoles);
     }
 

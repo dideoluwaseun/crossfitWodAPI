@@ -1,13 +1,13 @@
-package com.seun.crossfitWodAPI.serviceImpl;
+package com.seun.crossfitwodapi.service_implementation;
 
-import com.seun.crossfitWodAPI.domain.Members;
-import com.seun.crossfitWodAPI.domain.Records;
-import com.seun.crossfitWodAPI.domain.Workout;
-import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
-import com.seun.crossfitWodAPI.exception.BadRequestException;
-import com.seun.crossfitWodAPI.exception.ResourceNotFoundException;
-import com.seun.crossfitWodAPI.repository.RecordsRepository;
-import com.seun.crossfitWodAPI.service.RecordsService;
+import com.seun.crossfitwodapi.domain.Members;
+import com.seun.crossfitwodapi.domain.Records;
+import com.seun.crossfitwodapi.domain.Workout;
+import com.seun.crossfitwodapi.domain.dto.RecordsDTO;
+import com.seun.crossfitwodapi.exception.BadRequestException;
+import com.seun.crossfitwodapi.exception.ResourceNotFoundException;
+import com.seun.crossfitwodapi.repository.RecordsRepository;
+import com.seun.crossfitwodapi.service.RecordsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

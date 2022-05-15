@@ -1,4 +1,4 @@
-package com.seun.crossfitWodAPI.serviceImpl;
+package com.seun.crossfitwodapi.service_implementation;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

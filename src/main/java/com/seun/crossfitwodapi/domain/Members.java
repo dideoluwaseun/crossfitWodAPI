@@ -27,7 +27,7 @@ public class Members {
     private String email;
     private String username;
     private String password;
-    @OneToMany(mappedBy = "members")
+    @OneToMany(mappedBy = "members", fetch = FetchType.LAZY)
     private Set<MembersRoles> membersRoles;
     private Timestamp createdAt;
     private Timestamp updatedAt;
