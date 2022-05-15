@@ -13,6 +13,7 @@ import com.seun.crossfitwodapi.service.MembersService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("api/v1/member")
+@RequestMapping("/api/v1/member")
 public class MembersController {
     private final MembersService membersService;
 
@@ -48,7 +49,7 @@ public class MembersController {
     }
 
     @GetMapping (path = "{memberId}")
-    public ResponseEntity<Optional<Members>> getMemberById(@PathVariable Long memberId) {
+    public ResponseEntity<Optional<Members>> getMemberById(@PathVariable(value = "memberId") Long memberId) {
         return ResponseEntity.ok().body(membersService.getMemberById(memberId));
     }
 
@@ -59,7 +60,7 @@ public class MembersController {
     }
 
     @PostMapping(path = "/role")
-    public ResponseEntity<?> saveRole(@RequestBody RoleToMemberForm form) {
+    public ResponseEntity<Response> saveRole(@RequestBody RoleToMemberForm form) {
         membersService.addRoleToMembers(form.getUsername(), form.getRoleName());
         return ResponseEntity.ok().build();
     }
@@ -67,7 +68,6 @@ public class MembersController {
     @GetMapping(path = "/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        System.out.println(authorizationHeader);
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
@@ -76,7 +76,7 @@ public class MembersController {
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String username = decodedJWT.getSubject();
                 Members member = membersService.getMemberByUsername(username);
-                System.out.println(member);
+                log.info(member.toString());
                 String accessToken = JWT.create().withSubject(member.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())

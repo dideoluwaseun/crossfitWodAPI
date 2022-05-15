@@ -13,7 +13,6 @@ import com.seun.crossfitwodapi.repository.RolesRepository;
 import com.seun.crossfitwodapi.service.MembersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -57,14 +56,12 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     public List<Members> getAllMembers(Integer pageNo, Integer elementPerPage) {
         Pageable membersPage = PageRequest.of(pageNo, elementPerPage);
         log.info("Fetching list of all members" );
-        Page<Members> members = membersRepository.findAll(membersPage);
-        return members.getContent();
+        return membersRepository.findAll(membersPage).getContent();
     }
 
     @Override
     public Optional<Members> getMemberById(Long id) {
-        boolean idExists = membersRepository.existsById(id);
-        if (!idExists) {
+        if (membersRepository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Member does not exist");
         }
         log.info("Fetching details of members with id {}", id );
@@ -88,8 +85,7 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         if(Objects.isNull(membersDTO)) {
             throw new IllegalStateException();
         }
-        Optional<Members> memberEmail = membersRepository.findByEmail(membersDTO.getEmail());
-        if (memberEmail.isPresent()) {
+        if (membersRepository.findByEmail(membersDTO.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("Member you are trying to save already exists");
         }
         if(membersDTO.getName() == null || membersDTO.getGender() == null  || membersDTO.getDob() == null  || membersDTO.getEmail() == null  || membersDTO.getUsername() == null  || membersDTO.getPassword() == null) {
@@ -117,16 +113,14 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     @Override
     @Transactional
     public void addRoleToMembers(String username, String roleName) {
-       Members members = membersRepository.findByUsername(username);
-       Roles roles = rolesRepository.findByName(roleName);
-       log.info("Adding role to Member");
-       MembersRoles membersRoles = MembersRoles.builder()
+        Members members = membersRepository.findByUsername(username);
+        Roles roles = rolesRepository.findByName(roleName);
+        log.info("Adding role to Member");
+        MembersRoles membersRoles = MembersRoles.builder()
                .roles(roles)
                .members(members)
                .build();
-       membersRolesRepository.save(membersRoles);
-//       Set<MembersRoles> membersRoles1 = members.getMembersRoles();
-//        membersRoles1.add(membersRoles);
+        membersRolesRepository.save(membersRoles);
         members.getMembersRoles().add(membersRoles);
     }
 
@@ -158,12 +152,11 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
 
     @Override
     public void deleteOneMember(Long id) {
-        boolean existMembers = membersRepository.existsById(id);
-        if (!existMembers) {
+        if (!membersRepository.existsById(id)) {
             throw new ResourceNotFoundException();
         } else {
+            log.info("Deleting details of members with id {}", id );
             membersRepository.deleteById(id);
         }
-        log.info("Deleting details of members with id {}", id );
     }
 }
