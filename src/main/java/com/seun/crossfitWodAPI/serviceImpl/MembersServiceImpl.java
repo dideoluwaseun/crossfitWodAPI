@@ -116,17 +116,18 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     }
 
     @Override
-    public void addRoleToMembers(String username, String roleName) {
-       Members members = membersRepository.findByUsername(username);
-       Roles roles = rolesRepository.findByName(roleName);
 
-//        System.out.println("me");
+    public void addRoleToMembers(String username, String roleName) {
+        Roles roles = rolesRepository.findByName(roleName);
+        Members members = membersRepository.findByUsername(username);
         MembersRoles membersRoles = new MembersRoles();
-        log.info("Adding role to Member");
+//        log.info("Adding role to Member");
         membersRoles.setRoles(roles);
         membersRoles.setMembers(members);
         membersRolesRepository.save(membersRoles);
         members.getMembersRoles().add(membersRoles);
+        log.info("Adding role to Member");
+
     }
 
     @Override

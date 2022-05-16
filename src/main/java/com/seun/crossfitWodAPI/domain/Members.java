@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
 
 @Data
 @Entity
@@ -31,7 +32,7 @@ public class Members {
     private String email;
     private String username;
     private String password;
-    @OneToMany(mappedBy = "members")
+    @OneToMany(mappedBy = "members", fetch = EAGER)
     private Set<MembersRoles> membersRoles;
     private Timestamp createdAt;
     private Timestamp updatedAt;

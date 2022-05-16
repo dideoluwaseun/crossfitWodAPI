@@ -1,8 +1,10 @@
 package com.seun.crossfitWodAPI.serviceImpl;
 
 import com.seun.crossfitWodAPI.domain.Members;
+import com.seun.crossfitWodAPI.domain.Roles;
 import com.seun.crossfitWodAPI.domain.Workout;
 import com.seun.crossfitWodAPI.repository.MembersRepository;
+import com.seun.crossfitWodAPI.repository.RolesRepository;
 import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.MembersService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class StartUp implements CommandLineRunner {
     private final MembersRepository membersRepository;
     private final PasswordEncoder passwordEncoder;
     private final MembersService membersService;
+    private final RolesRepository rolesRepository;
     @Override
     public void run(String... args) throws Exception {
         workoutRepository.findById(1L).orElse(workoutRepository.save(
@@ -54,7 +57,9 @@ public class StartUp implements CommandLineRunner {
                                 "RX Weights: 135lb/95lb"))
                         .build()
         ));
-        membersRepository.findById(1L).orElse(membersRepository.save(
+        Members members = membersRepository.findById(1L).orElse(null);
+        if(members == null) {
+    membersRepository.save(
                 Members.builder().name("Seun")
                         .gender("female")
                         .dob(LocalDate.of(2009,8,07))
@@ -64,9 +69,15 @@ public class StartUp implements CommandLineRunner {
                         .createdAt(new Timestamp(new Date().getTime()))
                         .updatedAt(new Timestamp(new Date().getTime()))
                         .build()
-        ));
-//        membersService.addRoleToMembers("seun@gmail.com", "ADMIN");
-        membersService.addRoleToMembers("mike@gmail.com", "USER");
+        );}
+        membersService.saveRole(
+                Roles.builder().name("USER").build()
+        );
+        membersService.saveRole(
+                Roles.builder().name("ADMIN").build()
+        );
+        membersService.addRoleToMembers("seun@gmail.com", "ADMIN");
+//        membersService.addRoleToMembers("mike@gmail.com", "USER");
 
     }
 }
