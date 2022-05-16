@@ -1,9 +1,11 @@
 package com.seun.crossfitWodAPI.domain.dto;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 @Data
+@RequiredArgsConstructor
 public class WorkoutDTO {
     private String name;
     private String mode;

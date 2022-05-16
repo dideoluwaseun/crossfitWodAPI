@@ -96,7 +96,7 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         if(membersDTO.getName() == null || membersDTO.getGender() == null  || membersDTO.getDob() == null  || membersDTO.getEmail() == null  || membersDTO.getUsername() == null  || membersDTO.getPassword() == null) {
             throw new BadRequestException("Either one of name, gender, date of birth, email, username or password is missing");
         }
-        log.info("Saving new members");
+        log.info("Saving new member");
         return membersRepository.save(Members.builder()
                 .name(membersDTO.getName())
                 .gender(membersDTO.getGender())
@@ -116,16 +116,13 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     }
 
     @Override
-
     public void addRoleToMembers(String username, String roleName) {
         Roles roles = rolesRepository.findByName(roleName);
         Members members = membersRepository.findByUsername(username);
-        MembersRoles membersRoles = new MembersRoles();
-//        log.info("Adding role to Member");
-        membersRoles.setRoles(roles);
-        membersRoles.setMembers(members);
-        membersRolesRepository.save(membersRoles);
-        members.getMembersRoles().add(membersRoles);
+        members.getMembersRoles().add(membersRolesRepository.save(
+                MembersRoles.builder()
+                        .members(members)
+                        .roles(roles).build()));
         log.info("Adding role to Member");
 
     }

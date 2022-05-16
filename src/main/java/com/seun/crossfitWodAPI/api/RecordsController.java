@@ -15,7 +15,7 @@ import java.net.URI;
 import java.util.List;
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/records")
+@RequestMapping("api/v1/record")
 public class RecordsController {
 
     private final RecordsService recordsService;
@@ -27,7 +27,7 @@ public class RecordsController {
     }
 
     @PostMapping
-    public ResponseEntity<Records> createNewWorkout(@Valid @RequestBody RecordsDTO recordsDTO) {
+    public ResponseEntity<Records> createNewRecord(@Valid @RequestBody RecordsDTO recordsDTO) {
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/records")));
         return ResponseEntity.created(uri).body(recordsService.createNewRecord(recordsDTO));
     }

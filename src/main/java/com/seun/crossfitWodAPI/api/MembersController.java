@@ -10,7 +10,6 @@ import com.seun.crossfitWodAPI.domain.MembersRoles;
 import com.seun.crossfitWodAPI.domain.Roles;
 import com.seun.crossfitWodAPI.domain.dto.MembersDTO;
 import com.seun.crossfitWodAPI.service.MembersService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("api/v1/member")
@@ -47,10 +47,10 @@ public class MembersController {
         return ResponseEntity.created(uri).body(membersService.saveOneMember(membersDTO));
     }
 
-    @GetMapping (path = "{memberId}")
-    public ResponseEntity<Optional<Members>> getMemberById(@PathVariable Long memberId) {
-        return ResponseEntity.ok().body(membersService.getMemberById(memberId));
-    }
+//    @GetMapping (path = "{memberId}")
+//    public ResponseEntity<Optional<Members>> getMemberById(@PathVariable Long memberId) {
+//        return ResponseEntity.ok().body(membersService.getMemberById(memberId));
+//    }
 
     @PostMapping(path = "/role")
     public ResponseEntity<Roles> saveRole(@RequestBody Roles role) {
@@ -58,48 +58,49 @@ public class MembersController {
         return ResponseEntity.created(uri).body(membersService.saveRole(role));
     }
 
-    @PostMapping(path = "/role")
-    public ResponseEntity<?> saveRole(@RequestBody RoleToMemberForm form) {
-        membersService.addRoleToMembers(form.getUsername(), form.getRoleName());
-        return ResponseEntity.ok().build();
+    @PostMapping(path = "/role/member")
+    public ResponseEntity<String> addRoleToMember(@RequestParam (required = true)  String username,
+                                             @RequestParam (required = true) String roleName) {
+        membersService.addRoleToMembers(username, roleName);
+        return ResponseEntity.ok().body("Role added to member");
     }
-
-    @GetMapping(path = "/token/refresh")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        System.out.println(authorizationHeader);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String refreshToken = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refreshToken);
-                String username = decodedJWT.getSubject();
-                Members member = membersService.getMemberByUsername(username);
-                System.out.println(member);
-                String accessToken = JWT.create().withSubject(member.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                        .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", member.getMembersRoles().stream().map(MembersRoles::getRoles).collect(Collectors.toList()))
-                        .sign(algorithm);
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("accessToken", accessToken);
-                tokens.put("refreshToken", refreshToken);
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-            } catch (Exception exception) {
-                log.error("Error logging in: {}", exception.getMessage());
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("errorMessage", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
-            }
-        } else {
-            throw new RuntimeException("Refresh token is missing");
-        }
-    }
+//
+//    @GetMapping(path = "/token/refresh")
+//    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        String authorizationHeader = request.getHeader(AUTHORIZATION);
+//        System.out.println(authorizationHeader);
+//        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+//            try {
+//                String refreshToken = authorizationHeader.substring("Bearer ".length());
+//                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+//                JWTVerifier verifier = JWT.require(algorithm).build();
+//                DecodedJWT decodedJWT = verifier.verify(refreshToken);
+//                String username = decodedJWT.getSubject();
+//                Members member = membersService.getMemberByUsername(username);
+//                System.out.println(member);
+//                String accessToken = JWT.create().withSubject(member.getUsername())
+//                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+//                        .withIssuer(request.getRequestURL().toString())
+//                        .withClaim("roles", member.getMembersRoles().stream().map(MembersRoles::getRoles).map(Roles::getName).collect(Collectors.toList()))
+//                        .sign(algorithm);
+//                Map<String, String> tokens = new HashMap<>();
+//                tokens.put("accessToken", accessToken);
+//                tokens.put("refreshToken", refreshToken);
+//                response.setContentType(APPLICATION_JSON_VALUE);
+//                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+//            } catch (Exception exception) {
+//                log.error("Error logging in: {}", exception.getMessage());
+//                response.setHeader("error", exception.getMessage());
+//                response.setStatus(FORBIDDEN.value());
+//                Map<String, String> error = new HashMap<>();
+//                error.put("errorMessage", exception.getMessage());
+//                response.setContentType(APPLICATION_JSON_VALUE);
+//                new ObjectMapper().writeValue(response.getOutputStream(), error);
+//            }
+//        } else {
+//            throw new RuntimeException("Refresh token is missing");
+//        }
+//    }
 
     @PatchMapping(path = "{memberId}")
     public ResponseEntity<Members> updateOneMember(@PathVariable Long memberId,
@@ -117,8 +118,3 @@ public class MembersController {
     }
 }
 
-@Data
-class RoleToMemberForm {
-    private String username;
-    private String roleName;
-}

@@ -3,10 +3,12 @@ package com.seun.crossfitWodAPI.serviceImpl;
 import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Roles;
 import com.seun.crossfitWodAPI.domain.Workout;
+import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
 import com.seun.crossfitWodAPI.repository.MembersRepository;
 import com.seun.crossfitWodAPI.repository.RolesRepository;
 import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.MembersService;
+import com.seun.crossfitWodAPI.service.RecordsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +26,7 @@ public class StartUp implements CommandLineRunner {
     private final MembersRepository membersRepository;
     private final PasswordEncoder passwordEncoder;
     private final MembersService membersService;
-    private final RolesRepository rolesRepository;
+    private final RecordsService recordsService;
     @Override
     public void run(String... args) throws Exception {
         workoutRepository.findById(1L).orElse(workoutRepository.save(
@@ -77,6 +79,8 @@ public class StartUp implements CommandLineRunner {
                 Roles.builder().name("ADMIN").build()
         );
         membersService.addRoleToMembers("seun@gmail.com", "ADMIN");
+        membersService.addRoleToMembers("seun@gmail.com", "USER");
+//        recordsService.createNewRecord(RecordsDTO.builder().record("10 reps").workoutId(workoutRepository.findById(1L)).build());
 //        membersService.addRoleToMembers("mike@gmail.com", "USER");
 
     }
