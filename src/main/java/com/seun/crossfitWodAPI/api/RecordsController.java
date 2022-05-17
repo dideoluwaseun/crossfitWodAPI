@@ -1,8 +1,6 @@
 package com.seun.crossfitWodAPI.api;
 
-import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Records;
-import com.seun.crossfitWodAPI.domain.Workout;
 import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
 import com.seun.crossfitWodAPI.service.RecordsService;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +30,16 @@ public class RecordsController {
         return ResponseEntity.created(uri).body(recordsService.createNewRecord(recordsDTO));
     }
 
-    @GetMapping (path = "{memberId}")
-    public ResponseEntity<Records> getRecordsByMembersId(@PathVariable Members membersId) {
-        return ResponseEntity.ok().body(recordsService.getRecordsByMembersId(membersId));
+    @GetMapping (path = "/member")
+    public ResponseEntity<List<Records>> getRecordsByMembersId(@RequestParam Long membersId, @RequestParam(defaultValue = "0") Integer pageNo,
+                                                               @RequestParam(defaultValue = "4") Integer elementPerPage) {
+        return ResponseEntity.ok().body(recordsService.getRecordsByMembersId(membersId, pageNo, elementPerPage));
     }
 
-    @GetMapping (path = "{workoutId}")
-    public ResponseEntity<Records> getRecordsByMembersId(@PathVariable Workout workoutId) {
-        return ResponseEntity.ok().body(recordsService.getRecordsByWorkoutId(workoutId));
+    @GetMapping (path = "/workout")
+    public ResponseEntity<List<Records>> getRecordsByWorkoutId(@RequestParam Long workoutId, @RequestParam(defaultValue = "0") Integer pageNo,
+                                                               @RequestParam(defaultValue = "4") Integer elementPerPage) {
+        return ResponseEntity.ok().body(recordsService.getRecordsByWorkoutId(workoutId, pageNo, elementPerPage));
     }
 
     @DeleteMapping(path = "{recordId}")

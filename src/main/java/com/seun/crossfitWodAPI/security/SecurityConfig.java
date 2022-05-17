@@ -36,10 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/api/v1/member/login/**", "/api/v1/member/token/refresh").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/member/**", "/api/v1/records/**", "/api/v1/workout/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/member/**", "/api/v1/records/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/member/**", "/api/v1/record/**", "/api/v1/workout/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/member/**", "/api/v1/record/**").hasAnyAuthority("USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST,  "/api/v1/workout/**").hasAnyAuthority("ADMIN");
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE,  "/api/v1/workout/**", "/api/v1/member/**", "/api/v1/records/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE,  "/api/v1/workout/**", "/api/v1/member/**", "/api/v1/record/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,6 +1,5 @@
 package com.seun.crossfitWodAPI;
 
-import com.seun.crossfitWodAPI.service.RecordsService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

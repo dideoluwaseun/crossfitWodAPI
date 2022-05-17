@@ -1,15 +1,13 @@
 package com.seun.crossfitWodAPI.repository;
 
-import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Records;
-import com.seun.crossfitWodAPI.domain.Workout;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RecordsRepository extends JpaRepository<Records, Long> {
-    Records findByWod (Workout workoutId);
-    Records findByMembers (Members membersId);
-
-//select * from workout_records where workout id = specific id
+    List<Records> findByWorkoutId (Long workoutId);
+    List<Records> findByMemberId(Long memberId);
 }

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class WorkoutController {
     }
 
     @GetMapping (path = "{workoutId}")
-    public ResponseEntity<Workout> getOneWorkout(@PathVariable Long workoutId) {
+    public ResponseEntity<Optional<Workout>> getOneWorkout(@PathVariable Long workoutId) {
         return ResponseEntity.ok().body(workoutService.getOneWorkout(workoutId));
     }
 

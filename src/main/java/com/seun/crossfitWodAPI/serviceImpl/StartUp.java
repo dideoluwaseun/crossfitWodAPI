@@ -3,12 +3,9 @@ package com.seun.crossfitWodAPI.serviceImpl;
 import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Roles;
 import com.seun.crossfitWodAPI.domain.Workout;
-import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
 import com.seun.crossfitWodAPI.repository.MembersRepository;
-import com.seun.crossfitWodAPI.repository.RolesRepository;
 import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.MembersService;
-import com.seun.crossfitWodAPI.service.RecordsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,10 +23,12 @@ public class StartUp implements CommandLineRunner {
     private final MembersRepository membersRepository;
     private final PasswordEncoder passwordEncoder;
     private final MembersService membersService;
-    private final RecordsService recordsService;
+
     @Override
-    public void run(String... args) throws Exception {
-        workoutRepository.findById(1L).orElse(workoutRepository.save(
+    public void run(String... args) {
+        Workout workout = workoutRepository.findById(1L).orElse(null);
+        if(workout == null) {
+        workoutRepository.save(
                 Workout.builder().name("Tommy V")
                         .mode("For Time")
                         .equipment(List.of("barbell", "rope"))
@@ -45,8 +44,10 @@ public class StartUp implements CommandLineRunner {
                                 "Try to do the 9 and 6 thrusters unbroken",
                                 "RX Weights: 115lb/75lb"))
                         .build()
-        ));
-        workoutRepository.findById(2L).orElse(workoutRepository.save(
+        );}
+        Workout workout2 = workoutRepository.findById(2L).orElse(null);
+        if(workout2 == null) {
+        workoutRepository.save(
                 Workout.builder().name("Dead Push-Ups")
                         .mode("AMRAP 10")
                         .equipment(List.of("barbell"))
@@ -58,13 +59,13 @@ public class StartUp implements CommandLineRunner {
                                 "Try to aim for unbroken sets",
                                 "RX Weights: 135lb/95lb"))
                         .build()
-        ));
+        );}
         Members members = membersRepository.findById(1L).orElse(null);
         if(members == null) {
     membersRepository.save(
                 Members.builder().name("Seun")
                         .gender("female")
-                        .dob(LocalDate.of(2009,8,07))
+                        .dob(LocalDate.of(2009,8,7))
                         .email("seun@gmail.com")
                         .username("seun@gmail.com")
                         .password(passwordEncoder.encode("1234"))
@@ -72,6 +73,19 @@ public class StartUp implements CommandLineRunner {
                         .updatedAt(new Timestamp(new Date().getTime()))
                         .build()
         );}
+        Members members2 = membersRepository.findById(2L).orElse(null);
+        if(members2 == null) {
+            membersRepository.save(
+                    Members.builder().name("Mike")
+                            .gender("male")
+                            .dob(LocalDate.of(2002,8,7))
+                            .email("mike@gmail.com")
+                            .username("mike@gmail.com")
+                            .password(passwordEncoder.encode("4321"))
+                            .createdAt(new Timestamp(new Date().getTime()))
+                            .updatedAt(new Timestamp(new Date().getTime()))
+                            .build()
+            );}
         membersService.saveRole(
                 Roles.builder().name("USER").build()
         );
@@ -80,8 +94,7 @@ public class StartUp implements CommandLineRunner {
         );
         membersService.addRoleToMembers("seun@gmail.com", "ADMIN");
         membersService.addRoleToMembers("seun@gmail.com", "USER");
-//        recordsService.createNewRecord(RecordsDTO.builder().record("10 reps").workoutId(workoutRepository.findById(1L)).build());
-//        membersService.addRoleToMembers("mike@gmail.com", "USER");
+        membersService.addRoleToMembers("mike@gmail.com", "USER");
 
     }
 }

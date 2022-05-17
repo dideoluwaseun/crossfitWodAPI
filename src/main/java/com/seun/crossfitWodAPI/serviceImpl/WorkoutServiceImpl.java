@@ -8,6 +8,7 @@ import com.seun.crossfitWodAPI.exception.ResourceNotFoundException;
 import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
@@ -31,9 +34,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     @Transactional
     public Workout createNewWorkout(WorkoutDTO workoutDTO) {
-        boolean workoutName = workoutRepository.existsByName(workoutDTO.getName());
-        if (workoutName) {
-            throw new ResourceAlreadyExistsException("Workout already exists");
+        if(Objects.isNull(workoutDTO)) {
+            throw new BadRequestException("No request body found");
+        }
+        if (workoutRepository.findByName(workoutDTO.getName()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Workout you are trying to save already exists");
         }
         if(workoutDTO.getName() == null || workoutDTO.getMode() == null  || workoutDTO.getEquipment() == null  || workoutDTO.getExercises() == null) {
             throw new BadRequestException("Either one of name, mode, equipment or exercises is missing");
@@ -50,8 +55,12 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Workout getOneWorkout(Long id) {
-        return workoutRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+    public Optional<Workout> getOneWorkout(Long id) {
+        if (workoutRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Workout does not exist");
+        }
+        log.info("Fetching details of workout with id {}", id );
+        return workoutRepository.findById(id);
     }
 
     @Override
@@ -81,10 +90,10 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public void deleteOneWorkout(Long id) {
-        boolean workoutExists = workoutRepository.existsById(id);
-        if (!workoutExists) {
+        if (!workoutRepository.existsById(id)) {
             throw new ResourceNotFoundException();
         } else {
+            log.info("Deleting details of workout with id {}", id );
             workoutRepository.deleteById(id);
         }
     }

@@ -1,16 +1,16 @@
 package com.seun.crossfitWodAPI.domain.dto;
 
-import com.seun.crossfitWodAPI.domain.Members;
-import com.seun.crossfitWodAPI.domain.Workout;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Data
-//@Builder
+@Builder
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class RecordsDTO {
     private String record;
-    private Workout workoutId;
-    private Members memberId;
+    private Long workoutId;
+    private Long memberId;
 }

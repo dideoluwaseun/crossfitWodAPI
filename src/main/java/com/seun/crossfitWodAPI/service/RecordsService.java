@@ -1,8 +1,6 @@
 package com.seun.crossfitWodAPI.service;
 
-import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Records;
-import com.seun.crossfitWodAPI.domain.Workout;
 import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
 
 import java.util.List;
@@ -10,8 +8,8 @@ import java.util.List;
 
 public interface RecordsService {
     List<Records> getAllRecords(Integer pageNo, Integer elementPerPage);
-    Records getRecordsByMembersId(Members memberId);
-    Records getRecordsByWorkoutId(Workout workoutId);
+    List<Records> getRecordsByMembersId(Long memberId, Integer pageNo, Integer elementPerPage);
+    List<Records> getRecordsByWorkoutId(Long workoutId, Integer pageNo, Integer elementPerPage);
     Records createNewRecord(RecordsDTO recordsDTO);
     void deleteOneRecord(Long recordId);
 }

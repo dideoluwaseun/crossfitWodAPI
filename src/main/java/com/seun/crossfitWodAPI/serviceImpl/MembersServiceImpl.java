@@ -48,9 +48,7 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         }
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        members.getMembersRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getRoles().getName()));
-        });
+        members.getMembersRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoles().getName())));
         return new User(members.getUsername(),members.getPassword(), authorities);
     }
 
@@ -58,14 +56,12 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
     public List<Members> getAllMembers(Integer pageNo, Integer elementPerPage) {
         Pageable membersPage = PageRequest.of(pageNo, elementPerPage);
         log.info("Fetching list of all members" );
-        Page<Members> members = membersRepository.findAll(membersPage);
-        return members.getContent();
+        return membersRepository.findAll(membersPage).getContent();
     }
 
     @Override
     public Optional<Members> getMemberById(Long id) {
-        boolean idExists = membersRepository.existsById(id);
-        if (!idExists) {
+        if (membersRepository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Member does not exist");
         }
         log.info("Fetching details of members with id {}", id );
@@ -74,23 +70,22 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
 
     @Override
     public Members getMemberByUsername(String username) {
-        Members members = membersRepository.findByUsername(username);
-        if(members == null) {
+        Members member = membersRepository.findByUsername(username);
+        if(member == null) {
             log.error("Member with username {} does not exist", username);
             throw new ResourceNotFoundException();
         }
         log.info("Fetching details of member with username {}", username );
-        return members;
+        return member;
     }
 
     @Transactional
     @Override
     public Members saveOneMember(MembersDTO membersDTO) {
         if(Objects.isNull(membersDTO)) {
-            throw new IllegalStateException();
+            throw new BadRequestException("No request body found");
         }
-        Optional<Members> memberEmail = membersRepository.findByEmail(membersDTO.getEmail());
-        if (memberEmail.isPresent()) {
+        if (membersRepository.findByEmail(membersDTO.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("Member you are trying to save already exists");
         }
         if(membersDTO.getName() == null || membersDTO.getGender() == null  || membersDTO.getDob() == null  || membersDTO.getEmail() == null  || membersDTO.getUsername() == null  || membersDTO.getPassword() == null) {
@@ -124,7 +119,6 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
                         .members(members)
                         .roles(roles).build()));
         log.info("Adding role to Member");
-
     }
 
     @Override
@@ -155,12 +149,11 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
 
     @Override
     public void deleteOneMember(Long id) {
-        boolean existMembers = membersRepository.existsById(id);
-        if (!existMembers) {
+        if (!membersRepository.existsById(id)) {
             throw new ResourceNotFoundException();
         } else {
+            log.info("Deleting details of members with id {}", id );
             membersRepository.deleteById(id);
         }
-        log.info("Deleting details of members with id {}", id );
     }
 }
