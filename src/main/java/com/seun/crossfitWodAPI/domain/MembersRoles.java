@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -15,7 +16,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "members_roles")
 @NoArgsConstructor
-public class MembersRoles {
+public class MembersRoles  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

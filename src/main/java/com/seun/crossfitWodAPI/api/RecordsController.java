@@ -3,6 +3,7 @@ package com.seun.crossfitWodAPI.api;
 import com.seun.crossfitWodAPI.domain.Records;
 import com.seun.crossfitWodAPI.domain.dto.RecordsDTO;
 import com.seun.crossfitWodAPI.service.RecordsService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +12,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/record")
+@Api(tags = "Records Resource")
+@RequestMapping(value = "api/v1/records", produces = {APPLICATION_JSON_VALUE})
 public class RecordsController {
 
     private final RecordsService recordsService;

@@ -1,7 +1,7 @@
 package com.seun.crossfitWodAPI.serviceImpl;
 
-import com.seun.crossfitWodAPI.domain.Workout;
-import com.seun.crossfitWodAPI.domain.dto.WorkoutDTO;
+import com.seun.crossfitWodAPI.domain.Workouts;
+import com.seun.crossfitWodAPI.domain.dto.WorkoutsDTO;
 import com.seun.crossfitWodAPI.exception.BadRequestException;
 import com.seun.crossfitWodAPI.exception.ResourceAlreadyExistsException;
 import com.seun.crossfitWodAPI.exception.ResourceNotFoundException;
@@ -9,6 +9,9 @@ import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,37 +28,39 @@ import java.util.Optional;
 public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
 
+    @Cacheable(value = "Workouts")
     @Override
-    public List<Workout> getAllWorkouts(Integer pageNo, Integer elementPerPage) {
+    public List<Workouts> getAllWorkouts(Integer pageNo, Integer elementPerPage) {
         Pageable workoutPage = PageRequest.of(pageNo, elementPerPage);
         return workoutRepository.findAll(workoutPage).getContent();
     }
 
     @Override
     @Transactional
-    public Workout createNewWorkout(WorkoutDTO workoutDTO) {
-        if(Objects.isNull(workoutDTO)) {
+    public Workouts createNewWorkout(WorkoutsDTO workoutsDTO) {
+        if(Objects.isNull(workoutsDTO)) {
             throw new BadRequestException("No request body found");
         }
-        if (workoutRepository.findByName(workoutDTO.getName()).isPresent()) {
+        if (workoutRepository.findByName(workoutsDTO.getName()).isPresent()) {
             throw new ResourceAlreadyExistsException("Workout you are trying to save already exists");
         }
-        if(workoutDTO.getName() == null || workoutDTO.getMode() == null  || workoutDTO.getEquipment() == null  || workoutDTO.getExercises() == null) {
+        if(workoutsDTO.getName() == null || workoutsDTO.getMode() == null  || workoutsDTO.getEquipment() == null  || workoutsDTO.getExercises() == null) {
             throw new BadRequestException("Either one of name, mode, equipment or exercises is missing");
         }
-        return workoutRepository.save(Workout.builder()
-                .name(workoutDTO.getName())
-                .mode(workoutDTO.getMode())
-                .equipment(workoutDTO.getEquipment())
-                .exercises(workoutDTO.getExercises())
+        return workoutRepository.save(Workouts.builder()
+                .name(workoutsDTO.getName())
+                .mode(workoutsDTO.getMode())
+                .equipment(workoutsDTO.getEquipment())
+                .exercises(workoutsDTO.getExercises())
                 .createdAt(new Timestamp(new Date().getTime()))
                 .updatedAt(new Timestamp(new Date().getTime()))
-                .trainerTips(workoutDTO.getTrainerTips())
+                .trainerTips(workoutsDTO.getTrainerTips())
                 .build());
     }
 
+    @Cacheable(value = "Workouts", key = "#id")
     @Override
-    public Optional<Workout> getOneWorkout(Long id) {
+    public Optional<Workouts> getOneWorkout(Long id) {
         if (workoutRepository.findById(id).isEmpty()) {
             throw new ResourceNotFoundException("Workout does not exist");
         }
@@ -63,31 +68,33 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutRepository.findById(id);
     }
 
+    @CachePut(value = "Workouts", key = "#id")
     @Override
-    public Workout updateOneWorkout(Long id, String mode, List<String> exercises, List<String> equipment, List<String> trainerTips) {
-        Workout workout = workoutRepository.findById(id).orElseThrow(IllegalStateException::new);
-        if (Objects.equals(workout.getMode(), mode) || Objects.equals(workout.getEquipment(), equipment) || Objects.equals(workout.getTrainerTips(), trainerTips)) {
+    public Workouts updateOneWorkout(Long id, String mode, List<String> exercises, List<String> equipment, List<String> trainerTips) {
+        Workouts workouts = workoutRepository.findById(id).orElseThrow(IllegalStateException::new);
+        if (Objects.equals(workouts.getMode(), mode) || Objects.equals(workouts.getEquipment(), equipment) || Objects.equals(workouts.getTrainerTips(), trainerTips)) {
             throw new ResourceAlreadyExistsException();
         }
-        if ((mode!= null) && !Objects.equals(workout.getMode(), mode)) {
-            workout.setMode(mode);
-            workout.setUpdatedAt(new Timestamp(new Date().getTime()));
+        if ((mode!= null) && !Objects.equals(workouts.getMode(), mode)) {
+            workouts.setMode(mode);
+            workouts.setUpdatedAt(new Timestamp(new Date().getTime()));
         }
-        if ((equipment!= null) && !Objects.equals(workout.getEquipment(), equipment)) {
-            workout.setEquipment(equipment);
-            workout.setUpdatedAt(new Timestamp(new Date().getTime()));
+        if ((equipment!= null) && !Objects.equals(workouts.getEquipment(), equipment)) {
+            workouts.setEquipment(equipment);
+            workouts.setUpdatedAt(new Timestamp(new Date().getTime()));
         }
-        if ((exercises!= null) && !Objects.equals(workout.getExercises(), exercises)) {
-            workout.setExercises(exercises);
-            workout.setUpdatedAt(new Timestamp(new Date().getTime()));
+        if ((exercises!= null) && !Objects.equals(workouts.getExercises(), exercises)) {
+            workouts.setExercises(exercises);
+            workouts.setUpdatedAt(new Timestamp(new Date().getTime()));
         }
-        if ((trainerTips!= null) && !Objects.equals(workout.getTrainerTips(), trainerTips)) {
-            workout.setTrainerTips(trainerTips);
-            workout.setUpdatedAt(new Timestamp(new Date().getTime()));
+        if ((trainerTips!= null) && !Objects.equals(workouts.getTrainerTips(), trainerTips)) {
+            workouts.setTrainerTips(trainerTips);
+            workouts.setUpdatedAt(new Timestamp(new Date().getTime()));
         }
-        return workoutRepository.save(workout);
+        return workoutRepository.save(workouts);
     }
 
+    @CacheEvict(value = "Workouts", key = "#id")
     @Override
     public void deleteOneWorkout(Long id) {
         if (!workoutRepository.existsById(id)) {

@@ -13,7 +13,9 @@ import com.seun.crossfitWodAPI.repository.RolesRepository;
 import com.seun.crossfitWodAPI.service.MembersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -52,13 +54,16 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         return new User(members.getUsername(),members.getPassword(), authorities);
     }
 
+    @Cacheable(value = "Members")
     @Override
     public List<Members> getAllMembers(Integer pageNo, Integer elementPerPage) {
         Pageable membersPage = PageRequest.of(pageNo, elementPerPage);
         log.info("Fetching list of all members" );
+        log.debug("its appearing twice");
         return membersRepository.findAll(membersPage).getContent();
     }
 
+    @Cacheable(value = "Members", key = "#id")
     @Override
     public Optional<Members> getMemberById(Long id) {
         if (membersRepository.findById(id).isEmpty()) {
@@ -121,6 +126,7 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         log.info("Adding role to Member");
     }
 
+    @CachePut(value = "Members", key = "#id")
     @Override
     @Transactional
     public Members updateOneMember(Long id, String name, String email, String username, String password) {
@@ -147,10 +153,11 @@ public class MembersServiceImpl implements MembersService, UserDetailsService {
         return membersRepository.save(members);
     }
 
+    @CacheEvict(value = "Members", key = "#id")
     @Override
     public void deleteOneMember(Long id) {
         if (!membersRepository.existsById(id)) {
-            throw new ResourceNotFoundException();
+            throw new ResourceNotFoundException("Member you are trying to delete does not exist");
         } else {
             log.info("Deleting details of members with id {}", id );
             membersRepository.deleteById(id);

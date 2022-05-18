@@ -35,10 +35,10 @@ CREATE TABLE IF NOT EXISTS members
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS workout_records
+CREATE TABLE IF NOT EXISTS workouts_records
 (
     id int NOT NULL AUTO_INCREMENT,
-    workout_records varchar(255),
+    workouts_records varchar(255),
     members_id integer REFERENCES members (id),
     wod_id integer REFERENCES wod (id),
     created_at datetime,

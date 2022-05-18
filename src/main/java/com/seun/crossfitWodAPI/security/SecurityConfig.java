@@ -31,15 +31,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/member/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/members/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/api/v1/member/login/**", "/api/v1/member/token/refresh").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/member/**", "/api/v1/record/**", "/api/v1/workout/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/member/**", "/api/v1/record/**").hasAnyAuthority("USER");
-        http.authorizeRequests().antMatchers(HttpMethod.POST,  "/api/v1/workout/**").hasAnyAuthority("ADMIN");
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE,  "/api/v1/workout/**", "/api/v1/member/**", "/api/v1/record/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/api/v1/members/login/**", "/api/v1/members/token/refresh").permitAll();
+        http.authorizeRequests().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
+                "/configuration/security", "/swagger-ui/**", "/webjars/**").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/members/**", "/api/v1/records/**", "/api/v1/workouts/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/members/**", "/api/v1/records/**").hasAnyAuthority("USER");
+        http.authorizeRequests().antMatchers(HttpMethod.POST,  "/api/v1/workouts/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE,  "/api/v1/workouts/**", "/api/v1/members/**", "/api/v1/records/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

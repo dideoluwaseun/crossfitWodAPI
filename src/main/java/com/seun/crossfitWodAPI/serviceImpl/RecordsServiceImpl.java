@@ -10,6 +10,8 @@ import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.RecordsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class RecordsServiceImpl implements RecordsService {
     private final MembersRepository membersRepository;
     private final WorkoutRepository workoutRepository;
 
+    @Cacheable(value = "Records")
     @Override
     public List<Records> getAllRecords(Integer pageNo, Integer elementPerPage) {
         Pageable recordsPage = PageRequest.of(pageNo, elementPerPage);
@@ -35,6 +38,7 @@ public class RecordsServiceImpl implements RecordsService {
         return recordsRepository.findAll(recordsPage).getContent();
     }
 
+    @Cacheable(value = "Records", key = "#memberId")
     @Override
     public List<Records> getRecordsByMembersId(Long memberId, Integer pageNo, Integer elementPerPage) {
         if (recordsRepository.findByMemberId(memberId).isEmpty()) {
@@ -43,6 +47,7 @@ public class RecordsServiceImpl implements RecordsService {
         return recordsRepository.findByMemberId(memberId);
     }
 
+    @Cacheable(value = "Records", key = "#workoutId")
     @Override
     public List<Records> getRecordsByWorkoutId(Long workoutId, Integer pageNo, Integer elementPerPage) {
         if (recordsRepository.findByWorkoutId(workoutId).isEmpty()) {
@@ -70,6 +75,7 @@ public class RecordsServiceImpl implements RecordsService {
                 .build());
     }
 
+    @CacheEvict(value = "Records", key = "#recordId")
     @Override
     public void deleteOneRecord(Long recordId) {
         if (!recordsRepository.existsById(recordId)) {

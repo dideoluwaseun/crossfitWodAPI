@@ -10,6 +10,7 @@ import com.seun.crossfitWodAPI.domain.MembersRoles;
 import com.seun.crossfitWodAPI.domain.Roles;
 import com.seun.crossfitWodAPI.domain.dto.MembersDTO;
 import com.seun.crossfitWodAPI.service.MembersService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("api/v1/member")
+@Api(tags = "Members Resource")
+@RequestMapping(value = "api/v1/members", produces = {APPLICATION_JSON_VALUE})
 public class MembersController {
     private final MembersService membersService;
 
@@ -46,6 +48,7 @@ public class MembersController {
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/member")));
         return ResponseEntity.created(uri).body(membersService.saveOneMember(membersDTO));
     }
+
 
     @GetMapping (path = "{memberId}")
     public ResponseEntity<Optional<Members>> getMemberById(@PathVariable Long memberId) {
@@ -64,7 +67,7 @@ public class MembersController {
         membersService.addRoleToMembers(username, roleName);
         return ResponseEntity.ok().body("Role added to member");
     }
-//
+
     @GetMapping(path = "/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
@@ -115,5 +118,6 @@ public class MembersController {
         membersService.deleteOneMember(memberId);
         return ResponseEntity.noContent().build();
     }
+
 }
 

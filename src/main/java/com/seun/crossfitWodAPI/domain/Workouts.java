@@ -10,6 +10,7 @@ import org.hibernate.annotations.TypeDefs;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Table (name = "wod")
 @TypeDefs({ @TypeDef( name = "list-array", typeClass = ListToStringConverter.class) })
-public class Workout {
+public class Workouts implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -47,8 +48,8 @@ public class Workout {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Workout workout = (Workout) o;
-        return id != null && Objects.equals(id, workout.id);
+        Workouts workouts = (Workouts) o;
+        return id != null && Objects.equals(id, workouts.id);
     }
 
     @Override

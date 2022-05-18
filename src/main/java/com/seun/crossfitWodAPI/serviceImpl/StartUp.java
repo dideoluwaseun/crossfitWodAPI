@@ -2,11 +2,12 @@ package com.seun.crossfitWodAPI.serviceImpl;
 
 import com.seun.crossfitWodAPI.domain.Members;
 import com.seun.crossfitWodAPI.domain.Roles;
-import com.seun.crossfitWodAPI.domain.Workout;
+import com.seun.crossfitWodAPI.domain.Workouts;
 import com.seun.crossfitWodAPI.repository.MembersRepository;
 import com.seun.crossfitWodAPI.repository.WorkoutRepository;
 import com.seun.crossfitWodAPI.service.MembersService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StartUp implements CommandLineRunner {
@@ -26,10 +27,10 @@ public class StartUp implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Workout workout = workoutRepository.findById(1L).orElse(null);
-        if(workout == null) {
+        Workouts workouts = workoutRepository.findById(1L).orElse(null);
+        if(workouts == null) {
         workoutRepository.save(
-                Workout.builder().name("Tommy V")
+                Workouts.builder().name("Tommy V")
                         .mode("For Time")
                         .equipment(List.of("barbell", "rope"))
                         .createdAt(new Timestamp(new Date().getTime()))
@@ -45,10 +46,10 @@ public class StartUp implements CommandLineRunner {
                                 "RX Weights: 115lb/75lb"))
                         .build()
         );}
-        Workout workout2 = workoutRepository.findById(2L).orElse(null);
-        if(workout2 == null) {
+        Workouts workouts2 = workoutRepository.findById(2L).orElse(null);
+        if(workouts2 == null) {
         workoutRepository.save(
-                Workout.builder().name("Dead Push-Ups")
+                Workouts.builder().name("Dead Push-Ups")
                         .mode("AMRAP 10")
                         .equipment(List.of("barbell"))
                         .createdAt(new Timestamp(new Date().getTime()))

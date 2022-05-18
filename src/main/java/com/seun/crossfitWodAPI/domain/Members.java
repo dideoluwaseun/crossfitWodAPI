@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ import static javax.persistence.FetchType.EAGER;
 @AllArgsConstructor
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 @Table (name = "members")
-public class Members {
+public class Members  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -33,7 +34,7 @@ public class Members {
     private String username;
     private String password;
     @JsonManagedReference
-    @OneToMany(mappedBy = "members", fetch = EAGER)
+    @OneToMany(mappedBy = "members", fetch = EAGER, cascade = CascadeType.ALL)
     private Set<MembersRoles> membersRoles = new HashSet<>();
     private Timestamp createdAt;
     private Timestamp updatedAt;

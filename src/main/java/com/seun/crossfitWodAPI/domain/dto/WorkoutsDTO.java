@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 @Data
 @RequiredArgsConstructor
-public class WorkoutDTO {
+public class WorkoutsDTO {
     private String name;
     private String mode;
     private List<String> equipment;
